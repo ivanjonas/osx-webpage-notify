@@ -5,6 +5,7 @@ everett="https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%
 evergreen="https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=evergreen+state+fairgrounds&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
 arlington="https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=Arlington+Airport&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
 bodal="https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=10+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
+bodal2="https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=25+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
 
 log() {
   printf "[$logtime] $@\n"
@@ -13,6 +14,12 @@ log() {
 main() {
   local sitename="$1"
   local searchstring="${2:-No clinics to show.}"
+  local foundfile="$DIR/FOUND_$sitename"
+
+  if [ -f "$foundfile" ]; then
+    log "Already found!!!"
+    return 0;
+  fi
 
   if [ -z $sitename ]; then
     log "Missing sitename [$sitename] or searchstring [$searchstring]"
@@ -27,6 +34,7 @@ main() {
     return 1;
   fi
 
+  touch "$foundfile"
   log "Time to register!"
   open "$site"
   echo 'Time to register!' | /usr/local/bin/terminal-notifier -title "Covid Alert! [$sitename]" -subtitle "Did not find text $searchstring" -sound sosumi -open "$site"
