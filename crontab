@@ -1,5 +1,6 @@
 # vi: ft=crontab
 
-#*/1 * * * * export DISPLAY=:0 && /Volumes/github/osx-webpage-notify/everett.sh >> /Volumes/github/osx-webpage-notify/everett.log
-
-*/1 * * * * export DISPLAY=:0 && /Volumes/github/osx-webpage-notify/evergreen.sh >> /Volumes/github/osx-webpage-notify/evergreen.log
+*/1 * * * * DISPLAY=:0 /Volumes/github/osx-webpage-notify/prepmod.sh arlington >> /Volumes/github/osx-webpage-notify/arlington.log
+*/1 * * * * DISPLAY=:0 /Volumes/github/osx-webpage-notify/prepmod.sh everett "3/19/2021" >> /Volumes/github/osx-webpage-notify/everett.log
+*/1 * * * * DISPLAY=:0 /Volumes/github/osx-webpage-notify/prepmod.sh evergreen >> /Volumes/github/osx-webpage-notify/evergreen.log
+*/1 * * * * DISPLAY=:0 /Volumes/github/osx-webpage-notify/prepmod.sh bodal >> /Volumes/github/osx-webpage-notify/bodal.log
