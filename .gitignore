@@ -1,2 +1,3 @@
 FOUND_*
-*.log
+
+/logs
