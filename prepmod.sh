@@ -31,12 +31,12 @@ main() {
   fi
 
   site=$(eval $"echo \${$sitename}")
-  result=$(curl -s "$site")
+  result=$(curl -s "$site" -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36')
 
   echo "$result" > "$sitefolder/lastrun.curl"
 
   if `echo "$result" | grep -q "$searchstring"`; then
-    log "No clinics."
+    log "No clinics. Found text: \"$searchstring\""
     return 1;
   fi
 
@@ -54,3 +54,4 @@ main() {
 }
 
 main "$@"
+
