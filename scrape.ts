@@ -5,7 +5,7 @@ import { chromium as chrome, Page } from "playwright";
 type Watcher = {
   name: string;
   url: string;
-  actions?: string[];
+  actions?: string[] | string[][];
   takeScreenshot?: boolean;
   useTerminalNotifier?: boolean;
   waitForText?: {
@@ -14,11 +14,11 @@ type Watcher = {
   };
 };
 type Config = {
-  defaultActions?: string[];
-  preAction?: string;
-  postAction?: string;
+  defaultActions?: string[] | string[][];
   sendSms?: string[];
+  smsPath?: string;
   takeScreenshot?: boolean;
+  terminalNotifierPath?: string;
   useTerminalNotifier?: boolean;
   watchers: Watcher[];
 };
@@ -159,7 +159,12 @@ const instance = async (
     const actions = watcherConfig.actions?.length
       ? watcherConfig.actions
       : defaultConfig.defaultActions ?? [];
-    const updatedActions = actions.map(replaceVariables);
+    const updatedActions = actions.map((action: string | string[]) => {
+      if (Array.isArray(action)) {
+        return replaceVariables(action.join(" "));
+      }
+      return replaceVariables(action);
+    });
 
     logger.log({
       actions,
@@ -167,11 +172,15 @@ const instance = async (
     });
 
     if (useTerminalNotifier) {
+      if (!defaultConfig.terminalNotifierPath) {
+        logger.error(`Missing setting for "terminalNotifierPath"`);
+        return;
+      }
       const subtitle = isPresent
         ? `Found the text: '${text}'`
         : `Did not find the text: '${text}'`;
       const terminalNotifierCommand = [
-        "terminal-notifier",
+        defaultConfig.terminalNotifierPath,
         `-title "Covid Alert! [${name}]"`,
         `-subtitle "${subtitle}"`,
         "-sound sosumi",
@@ -181,9 +190,13 @@ const instance = async (
     }
 
     if (defaultConfig.sendSms?.length) {
+      if (!defaultConfig.smsPath) {
+        logger.error(`Missing setting for "smsPath"`);
+        return;
+      }
       defaultConfig.sendSms.forEach((phoneNumber) => {
         const smsCommand = [
-          "imessage",
+          defaultConfig.smsPath,
           phoneNumber,
           `\"Book a vaccine appointment! [${name}] ${url}\"`,
         ].join(" ");
