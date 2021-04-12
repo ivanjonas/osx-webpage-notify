@@ -5,9 +5,7 @@ import { chromium as chrome, Page } from "playwright";
 type Watcher = {
   name: string;
   url: string;
-  preAction?: string;
-  action?: string;
-  postAction?: string;
+  actions?: string[];
   takeScreenshot?: boolean;
   useTerminalNotifier?: boolean;
   waitForText?: {
@@ -16,9 +14,10 @@ type Watcher = {
   };
 };
 type Config = {
-  defaultAction?: string;
+  defaultActions?: string[];
   preAction?: string;
   postAction?: string;
+  sendSms?: string[];
   takeScreenshot?: boolean;
   useTerminalNotifier?: boolean;
   watchers: Watcher[];
@@ -66,9 +65,12 @@ const instance = async (
   const dataDir = `.private/${name}`;
   const foundFile = `${dataDir}/FOUND`;
 
+  logger.log("Checking...");
+
   mkdirSync(dataDir, { recursive: true });
 
   if (existsSync(foundFile)) {
+    logger.log(`Already found.`);
     return;
   }
 
@@ -102,12 +104,12 @@ const instance = async (
     });
 
     try {
-      logger.log({
-        name,
-        url,
-        searchString,
-        waitForTextToBePresent,
-      });
+      // logger.log({
+      //   name,
+      //   url,
+      //   searchString,
+      //   waitForTextToBePresent,
+      // });
       const [request] = await Promise.all([
         page.goto(url, {
           timeout: 15000,
@@ -139,14 +141,14 @@ const instance = async (
 
   const conditionMet = await scrape(name, url, text, isPresent);
 
-  logger.log({
-    conditionMet,
-  });
-
   logger.log(
     `[${(conditionMet && "AVAILABLE") || "No appointments"}] text "${
       watcherConfig.waitForText.text
-    }" was ${(conditionMet && "FOUND") || "NOT found"}`
+    }" was ${
+      (((conditionMet && isPresent) || (!conditionMet && !isPresent)) &&
+        "FOUND") ||
+      "NOT found"
+    }`
   );
 
   if (conditionMet) {
@@ -154,34 +156,42 @@ const instance = async (
 
     const replaceVariables = (str: string) =>
       str.replace("%URL%", url).replace("%NAME%", `${name}`);
-    const preAction = replaceVariables(
-      watcherConfig.preAction || defaultConfig.preAction || ""
-    );
-    const action = replaceVariables(
-      watcherConfig.action || defaultConfig.defaultAction || ""
-    );
-    const postAction = replaceVariables(
-      watcherConfig.postAction || defaultConfig.postAction || ""
-    );
+    const actions = watcherConfig.actions?.length
+      ? watcherConfig.actions
+      : defaultConfig.defaultActions ?? [];
+    const updatedActions = actions.map(replaceVariables);
 
     logger.log({
-      preAction,
-      action,
-      postAction,
+      actions,
+      updatedActions,
     });
 
     if (useTerminalNotifier) {
-      const terminalNotifierCommand = `/usr/local/bin/terminal-notifier \
-        -title "Covid Alert! [$${name}]" \
-        -subtitle "Did not find text: \"$${text}\"" \
-        -sound sosumi \
-        -open "$${url}"`;
+      const subtitle = isPresent
+        ? `Found the text: '${text}'`
+        : `Did not find the text: '${text}'`;
+      const terminalNotifierCommand = [
+        "terminal-notifier",
+        `-title "Covid Alert! [${name}]"`,
+        `-subtitle "${subtitle}"`,
+        "-sound sosumi",
+        `-open "${url}"`,
+      ].join(" ");
       execSync(terminalNotifierCommand);
     }
 
-    preAction && execSync(preAction);
-    action && execSync(action);
-    postAction && execSync(postAction);
+    if (defaultConfig.sendSms?.length) {
+      defaultConfig.sendSms.forEach((phoneNumber) => {
+        const smsCommand = [
+          "imessage",
+          phoneNumber,
+          `\"Book a vaccine appointment! [${name}] ${url}\"`,
+        ].join(" ");
+        execSync(smsCommand);
+      });
+    }
+
+    updatedActions.forEach(execSync);
   }
 };
 

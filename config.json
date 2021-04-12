@@ -1,15 +1,17 @@
 {
-  "defaultAction": "open \"%URL%\"",
-  "preAction": "",
-  "postAction": "",
+  "defaultActions": [
+    "open \"%URL%\""
+  ],
   "takeScreenshot": true,
+  "sendSms": [
+    "2063842322",
+    "2065029085"
+  ],
+  "useTerminalNotifier": true,
   "watchers": [
     {
       "name": "Edmonds",
       "url": "https://schedule.seattlevna.com/home",
-      "preAction": "",
-      "action": "",
-      "postAction": "",
       "waitForText": {
         "isPresent": false,
         "text": "No Sites available"
@@ -45,9 +47,14 @@
     },
     {
       "name": "Bodal_25",
+      "actions": [
+        "echo \"%NAME%\" and \"%URL%\" are cool man",
+        "open \"%URL%\""
+      ],
       "url": "https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=25+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search",
       "waitForText": {
-        "text": "No clinics to show."
+        "isPresent": true,
+        "text": "Sign Up for a COVID-19 Vaccination"
       }
     },
     {
