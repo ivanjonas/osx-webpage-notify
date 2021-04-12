@@ -1,0 +1,15 @@
+{
+  "name": "osx-webpage-notify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jensbodal/osx-webpage-notify.git",
+  "author": "Jens Bodal <jensbodal@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.10.0"
+  },
+  "devDependencies": {
+    "ts-node": "9.1.1",
+    "typescript": "4.2.4"
+  }
+}

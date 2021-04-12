@@ -1,0 +1,61 @@
+{
+  "defaultAction": "open \"%URL%\"",
+  "preAction": "",
+  "postAction": "",
+  "takeScreenshot": true,
+  "watchers": [
+    {
+      "name": "Edmonds",
+      "url": "https://schedule.seattlevna.com/home",
+      "preAction": "",
+      "action": "",
+      "postAction": "",
+      "waitForText": {
+        "isPresent": false,
+        "text": "No Sites available"
+      }
+    },
+    {
+      "name": "Everett",
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=angel+of+the+winds&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Searc",
+      "waitForText": {
+        "text": "Available Appointments: 0"
+      }
+    },
+    {
+      "name": "Evergreen",
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=evergreen+state+fairgrounds&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search",
+      "waitForText": {
+        "text": "No clinics to show."
+      }
+    },
+    {
+      "name": "Arlington",
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=Arlington+Airport&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search",
+      "waitForText": {
+        "text": "No clinics to show."
+      }
+    },
+    {
+      "name": "Bodal",
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=98020&search_radius=10+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search",
+      "waitForText": {
+        "text": "No clinics to show."
+      }
+    },
+    {
+      "name": "Bodal_25",
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=25+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search",
+      "waitForText": {
+        "text": "No clinics to show."
+      }
+    },
+    {
+      "name": "Whalen",
+      "url": "https://mychart.catholichealth.net/prd/signupandschedule/embeddedschedule?id=130507&vt=310&dept=108000055",
+      "waitForText": {
+        "text": "Sorry"
+      }
+    }
+  ]
+}

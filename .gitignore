@@ -2,3 +2,4 @@ FOUND_*
 
 /.private
 /logs
+/node_modules

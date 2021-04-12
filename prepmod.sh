@@ -7,6 +7,8 @@ evergreen="https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&
 arlington="https://prepmod.doh.wa.gov/clinic/search?location=&search_radius=All&q%5Bvenue_search_name_or_venue_name_i_cont%5D=Arlington+Airport&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
 bodal="https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=10+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
 bodal2="https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=25+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
+whalen="https://mychart.catholichealth.net/prd/signupandschedule/embeddedschedule?id=130507&vt=310&dept=108000055"
+edmonds="https://schedule.seattlevna.com/home"
 
 log() {
   printf "[$logtime] $@\n"
