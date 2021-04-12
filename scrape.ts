@@ -9,6 +9,7 @@ type Watcher = {
   action?: string;
   postAction?: string;
   takeScreenshot?: boolean;
+  useTerminalNotifier?: boolean;
   waitForText?: {
     isPresent?: boolean;
     text: string;
@@ -19,6 +20,7 @@ type Config = {
   preAction?: string;
   postAction?: string;
   takeScreenshot?: boolean;
+  useTerminalNotifier?: boolean;
   watchers: Watcher[];
 };
 
@@ -54,6 +56,12 @@ const instance = async (
     url,
     waitForText: { text, isPresent },
   } = watcherConfig;
+  const takeScreenshot =
+    (defaultConfig.takeScreenshot || watcherConfig.takeScreenshot) &&
+    watcherConfig.takeScreenshot !== false;
+  const useTerminalNotifier =
+    (defaultConfig.useTerminalNotifier || watcherConfig.useTerminalNotifier) &&
+    watcherConfig.useTerminalNotifier !== false;
   const logger = Logger(name);
   const dataDir = `.private/${name}`;
   const foundFile = `${dataDir}/FOUND`;
@@ -63,7 +71,6 @@ const instance = async (
   if (existsSync(foundFile)) {
     return;
   }
-
 
   const waitForText = async (page: Page, text: string, timeout = 15000) => {
     try {
@@ -85,8 +92,6 @@ const instance = async (
     searchString: string,
     waitForTextToBePresent = false
   ) => {
-    const takeScreenshot =
-      defaultConfig.takeScreenshot || watcherConfig.takeScreenshot;
     const browser = await chrome.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -110,7 +115,7 @@ const instance = async (
         }),
       ]);
 
-      const textIsPresent = await waitForText(page, searchString, 5000);
+      const textIsPresent = await waitForText(page, searchString, 15000);
       const conditionMet = waitForTextToBePresent
         ? textIsPresent === true
         : textIsPresent === false;
@@ -145,7 +150,7 @@ const instance = async (
   );
 
   if (conditionMet) {
-    execSync(`touch "${foundFile}"`)
+    execSync(`touch "${foundFile}"`);
 
     const replaceVariables = (str: string) =>
       str.replace("%URL%", url).replace("%NAME%", `${name}`);
@@ -164,6 +169,15 @@ const instance = async (
       action,
       postAction,
     });
+
+    if (useTerminalNotifier) {
+      const terminalNotifierCommand = `/usr/local/bin/terminal-notifier \
+        -title "Covid Alert! [$${name}]" \
+        -subtitle "Did not find text: \"$${text}\"" \
+        -sound sosumi \
+        -open "$${url}"`;
+      execSync(terminalNotifierCommand);
+    }
 
     preAction && execSync(preAction);
     action && execSync(action);
