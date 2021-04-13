@@ -1,5 +1,11 @@
 import { execSync } from "child_process";
-import { existsSync, mkdirSync, renameSync, readFileSync, writeFileSync } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  renameSync,
+  readFileSync,
+  writeFileSync,
+} from "fs";
 import { PNG } from "pngjs";
 import { chromium as chrome, Page } from "playwright";
 import * as pixelmatch from "pixelmatch";
@@ -140,7 +146,7 @@ const instance = async (
 
         const baseScreenshot = PNG.sync.read(readFileSync(baseScreenshotPath));
         const newScreenshot = PNG.sync.read(
-          await page.screenshot({ path: latestScreenshotPath})
+          await page.screenshot({ path: latestScreenshotPath })
         );
         const diff = new PNG({ width: WIDTH, height: HEIGHT });
         const numDiffPixels = pixelmatch(
@@ -156,7 +162,7 @@ const instance = async (
 
         if (numDiffPixels > 0) {
           logger.log(`Updating base image because we have a match :)`);
-          renameSync(latestScreenshotPath, baseScreenshotPath)
+          renameSync(latestScreenshotPath, baseScreenshotPath);
           return true;
         }
 
@@ -224,7 +230,9 @@ const instance = async (
         logger.error(`Missing setting for "terminalNotifierPath"`);
         return;
       }
-      const subtitle = isPresent
+      const subtitle = useScreenshotComparison
+        ? "Screenshot diff"
+        : isPresent
         ? `Found the text: '${text}'`
         : `Did not find the text: '${text}'`;
       const terminalNotifierCommand = [
