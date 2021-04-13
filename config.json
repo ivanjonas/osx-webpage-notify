@@ -15,6 +15,11 @@
       }
     },
     {
+      "name": "Seattle_Screenshot",
+      "url": "https://seattle.signetic.com/",
+      "useScreenshotComparison": true
+    },
+    {
       "name": "Edmonds_Screenshot",
       "url": "https://schedule.seattlevna.com/home",
       "useScreenshotComparison": true
