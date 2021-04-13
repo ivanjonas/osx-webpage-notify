@@ -1,12 +1,15 @@
 import { execSync } from "child_process";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, renameSync, readFileSync, writeFileSync } from "fs";
+import { PNG } from "pngjs";
 import { chromium as chrome, Page } from "playwright";
+import * as pixelmatch from "pixelmatch";
 
 type Watcher = {
   name: string;
   url: string;
   actions?: string[] | string[][];
   takeScreenshot?: boolean;
+  useScreenshotComparison?: boolean;
   useTerminalNotifier?: boolean;
   waitForText?: {
     isPresent?: boolean;
@@ -19,9 +22,13 @@ type Config = {
   smsPath?: string;
   takeScreenshot?: boolean;
   terminalNotifierPath?: string;
+  useScreenshotComparison?: boolean;
   useTerminalNotifier?: boolean;
   watchers: Watcher[];
 };
+
+const WIDTH = 1440;
+const HEIGHT = 2560;
 
 const config: Config = require("./config.json");
 
@@ -50,17 +57,17 @@ const instance = async (
   defaultConfig: Omit<Config, "watchers">,
   watcherConfig: Watcher
 ) => {
-  const {
-    name,
-    url,
-    waitForText: { text, isPresent },
-  } = watcherConfig;
+  const { name, url, waitForText: { text, isPresent } = {} } = watcherConfig;
   const takeScreenshot =
     (defaultConfig.takeScreenshot || watcherConfig.takeScreenshot) &&
     watcherConfig.takeScreenshot !== false;
   const useTerminalNotifier =
     (defaultConfig.useTerminalNotifier || watcherConfig.useTerminalNotifier) &&
     watcherConfig.useTerminalNotifier !== false;
+  const useScreenshotComparison =
+    (defaultConfig.useScreenshotComparison ||
+      watcherConfig.useScreenshotComparison) &&
+    watcherConfig.useScreenshotComparison !== false;
   const logger = Logger(name);
   const dataDir = `.private/${name}`;
   const foundFile = `${dataDir}/FOUND`;
@@ -99,8 +106,8 @@ const instance = async (
     const page = await context.newPage();
 
     await page.setViewportSize({
-      width: 1440,
-      height: 2560,
+      width: WIDTH,
+      height: HEIGHT,
     });
 
     try {
@@ -116,6 +123,45 @@ const instance = async (
           waitUntil: "networkidle",
         }),
       ]);
+
+      if (useScreenshotComparison) {
+        const screenshotPath = `${dataDir}/${name}`;
+        const baseScreenshotPath = `${screenshotPath}_Base.png`;
+        const latestScreenshotPath = `${screenshotPath}_Latest.png`;
+        const diffScreenshotPath = `${screenshotPath}_Diff.png`;
+
+        if (!existsSync(baseScreenshotPath)) {
+          await page.screenshot({ path: baseScreenshotPath });
+          logger.log(
+            `No existing screenshotPath, taking base image and returning false: "${baseScreenshotPath}"`
+          );
+          return false;
+        }
+
+        const baseScreenshot = PNG.sync.read(readFileSync(baseScreenshotPath));
+        const newScreenshot = PNG.sync.read(
+          await page.screenshot({ path: latestScreenshotPath})
+        );
+        const diff = new PNG({ width: WIDTH, height: HEIGHT });
+        const numDiffPixels = pixelmatch(
+          baseScreenshot.data,
+          newScreenshot.data,
+          diff.data,
+          WIDTH,
+          HEIGHT,
+          { threshold: 0.1 }
+        );
+        logger.log(`Screenshot diff: ${numDiffPixels} different pixels`);
+        writeFileSync(`${diffScreenshotPath}`, PNG.sync.write(diff));
+
+        if (numDiffPixels > 0) {
+          logger.log(`Updating base image because we have a match :)`);
+          renameSync(latestScreenshotPath, baseScreenshotPath)
+          return true;
+        }
+
+        return false;
+      }
 
       const textIsPresent = await waitForText(page, searchString, 15000);
       const conditionMet = waitForTextToBePresent
@@ -141,15 +187,17 @@ const instance = async (
 
   const conditionMet = await scrape(name, url, text, isPresent);
 
-  logger.log(
-    `[${(conditionMet && "AVAILABLE") || "No appointments"}] text "${
-      watcherConfig.waitForText.text
-    }" was ${
-      (((conditionMet && isPresent) || (!conditionMet && !isPresent)) &&
-        "FOUND") ||
-      "NOT found"
-    }`
-  );
+  if (text) {
+    logger.log(
+      `[${(conditionMet && "AVAILABLE") || "No appointments"}] text "${
+        watcherConfig.waitForText.text
+      }" was ${
+        (((conditionMet && isPresent) || (!conditionMet && !isPresent)) &&
+          "FOUND") ||
+        "NOT found"
+      }`
+    );
+  }
 
   if (conditionMet) {
     execSync(`touch "${foundFile}"`);
