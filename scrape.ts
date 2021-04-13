@@ -35,7 +35,6 @@ const config: Config = require('./config.json');
 
 const Logger = (name: string) => {
   const helper = (severity: 'log' | 'error' | 'debug') => (message: any) => {
-    // const formattedMessage = `[${name}] ${JSON.stringify(message, null, 2)}`;
     const dateString = new Date().toLocaleString('en', {
       timeZoneName: 'short',
     });
