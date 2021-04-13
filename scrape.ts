@@ -24,6 +24,7 @@ type Watcher = {
 };
 type Config = {
   defaultActions?: string[] | string[][];
+  ignoreFoundFileForScreenshotDiff?: boolean;
   sendSms?: string[];
   smsPath?: string;
   takeScreenshot?: boolean;
@@ -77,12 +78,16 @@ const instance = async (
   const logger = Logger(name);
   const dataDir = `.private/${name}`;
   const foundFile = `${dataDir}/FOUND`;
+  const ignoreFoundFileForScreenshotDiff = useScreenshotComparison && defaultConfig.ignoreFoundFileForScreenshotDiff === true;
 
   logger.log("Checking...");
 
   mkdirSync(dataDir, { recursive: true });
 
-  if (existsSync(foundFile)) {
+  if (
+    existsSync(foundFile) &&
+    !ignoreFoundFileForScreenshotDiff
+  ) {
     logger.log(`Already found.`);
     return;
   }

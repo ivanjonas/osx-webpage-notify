@@ -1,5 +1,6 @@
 {
   "defaultActions": ["open \"%URL%\""],
+  "ignoreFoundFileForScreenshotDiff": true,
   "takeScreenshot": true,
   "sendSms": ["2063842322"],
   "smsPath": "/Users/bodal/local/bin/imessage",
@@ -12,6 +13,11 @@
       "waitForText": {
         "text": "No Sites available"
       }
+    },
+    {
+      "name": "Edmonds_Screenshot",
+      "url": "https://schedule.seattlevna.com/home",
+      "useScreenshotComparison": true
     },
     {
       "name": "Everett",
@@ -52,7 +58,7 @@
     {
       "name": "Bodal_Screenshot",
       "useScreenshotComparison": true,
-      "url": "https://prepmod.doh.wa.gov/clinic/search?location=98026&search_radius=25+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
+      "url": "https://prepmod.doh.wa.gov/clinic/search?location=98020&search_radius=10+miles&q%5Bvenue_search_name_or_venue_name_i_cont%5D=&clinic_date_eq%5Byear%5D=&clinic_date_eq%5Bmonth%5D=&clinic_date_eq%5Bday%5D=&q%5Bvaccinations_name_i_cont%5D=&commit=Search"
     },
     {
       "name": "Whalen",
